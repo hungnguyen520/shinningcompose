@@ -1,37 +1,46 @@
-version: "3.9"
+version: '3.9'
 services:
-  # mongo:
-  #   image: mongo:5.0
-  #   container_name: mongodb
-  #   environment:
-  #     - MONGO_INITDB_ROOT_USERNAME=root
-  #     - MONGO_INITDB_ROOT_PASSWORD=12345678x@X
-  #   # volumes:
-  #   #   - ~/docker_backup/mongo:/data/db # /host_path:/container_path OORR volume_name:/container_path
-  #   restart: always
-  #   ports:
-  #     - "27000:27017"
   mysql:
-    image: mysql:latest
+    image: mariadb:10.8
     ports:
-      - 3306:3306
+      - 3308:3306
     volumes:
-      - ~/docker_backup/mysql:/var/lib/mysql
+      - ./docker/mysql:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=12345678x@X
-      # - MYSQL_PASSWORD=An0thrS3crt
-      # - MYSQL_USER=citizix_user
-      - MYSQL_DATABASE=shinning_db
-  # shinningserver: 
-  #   image: hungnguyen520/shinningserver:latest
-  #   container_name: shinningserver
+  # api:
+  #   build:
+  #     context: ../shinningserver
+  #     dockerfile: Dockerfile
   #   environment:
-  #     MONGO_CONN_STR: mongodb://207.148.65.86:27017/
-  #   restart: always
+  #     - NODE_ENV=production
+  #     - DB_HOST=mysql
+  #     - DB_PORT=3306
+  #     - DB_USERNAME=root
+  #     - DB_PASSWORD=12345678x@X
+  #     - DB_COM_NAME=shinning_com
+  #     - DB_SSO_NAME=shinning_sso
   #   ports:
-  #     - "9000:9900"
-
-
-# docker-compose exec -T mongo sh -c 'mongodump --archive' > ~/docker_backup/mongo/db.dump
-# docker-compose exec -T mongo sh -c 'mongorestore --archive' < ~/docker_backup/mongo/db.dump
+  #     - '8800:4400'
+  #   restart: always
+  #   depends_on:
+  #     - mysql
+  #   links:
+  #     - mysql
+  # app:
+  #   build:
+  #     context: ../shinningapp
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ~/docker_backup/app:/app/src/assets
+  #   environment:
+  #     - NODE_ENV=production
+  #     - REACT_APP_API_URL=http://shinning.asia/api/
+  #   ports:
+  #     - '6600:3300'
+  #   restart: always
+  #   depends_on:
+  #     - api
+  #   links:
+  #     - api
 # netstat -tulpn | grep LISTEN
